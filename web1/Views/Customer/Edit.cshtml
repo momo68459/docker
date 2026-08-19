@@ -1,0 +1,61 @@
+@model Customer
+
+<h1>Edit a new customer</h1>
+
+<form asp-action="Edit" method="post">
+    <div class="form-group">
+        <label asp-for="Name"></label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Photo"></label>
+        <input asp-for="Photo" class="form-control" />
+        <span asp-validation-for="Photo" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Birthday"></label>
+        <input asp-for="Birthday" class="form-control datepicker" type="text" placeholder="月/日/年" />
+        <span asp-validation-for="Birthday" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Update</button>
+</form>
+
+<hr />
+
+<table border="1">
+    <tr>
+        <th>OrderID</th>
+        <th>CustomerID</th>
+        <th>ProductID</th>
+        <th>OrderDate</th>
+        <th>Quantity</th>
+        <th>UnitPrice</th>
+    </tr>
+
+    @foreach (var o in Model.Orders)
+    {
+        <tr>
+            <td>@o.OrderId</td>
+            <td>@o.CustomerID</td>
+            <td>@o.ProductID</td>
+            <td>@o.OrderDate</td>
+            <td>@o.Quantity</td>
+            <td>@o.UnitPrice</td>
+        </tr>
+    }
+</table>
+
+
+
+<!-- 引入 Flatpickr 的 CSS 與 JS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        flatpickr(".datepicker", {
+            dateFormat: "m/d/Y"  // 👈 這行強制將顯示格式定為「月/日/年」
+        });
+    });
+</script>

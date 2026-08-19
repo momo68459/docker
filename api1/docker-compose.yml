@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  web1:
+    # 每次 Compose up 都會 build
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
+    image: web1:latest
+    container_name: web1
+    ports:
+      - "8080:8080"
+    depends_on:
+      - sqlserver
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sql2022
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=pass@word1234
+    ports:
+      - "1433:1433"
+    volumes:
+      - C:\Demo\Data:/var/opt/mssql/data
+    restart: always

@@ -1,0 +1,7 @@
+C:\Demo\20260727\web1\bin\Release\net10.0\publish\web1.exe
+C:\Demo\20260727\web1\bin\Release\net10.0\publish\appsettings.Development.json
+C:\Demo\20260727\web1\bin\Release\net10.0\publish\appsettings.json
+C:\Demo\20260727\web1\bin\Release\net10.0\publish\web1.dll
+C:\Demo\20260727\web1\bin\Release\net10.0\publish\web1.deps.json
+C:\Demo\20260727\web1\bin\Release\net10.0\publish\web1.runtimeconfig.json
+C:\Demo\20260727\web1\bin\Release\net10.0\publish\web1.pdb

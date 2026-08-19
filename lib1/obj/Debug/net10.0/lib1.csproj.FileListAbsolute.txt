@@ -1,0 +1,14 @@
+C:\Demo\MyApp\lib1\bin\Debug\net10.0\lib1.deps.json
+C:\Demo\MyApp\lib1\bin\Debug\net10.0\lib1.dll
+C:\Demo\MyApp\lib1\bin\Debug\net10.0\lib1.pdb
+C:\Demo\MyApp\lib1\obj\Debug\net10.0\lib1.GeneratedMSBuildEditorConfig.editorconfig
+C:\Demo\MyApp\lib1\obj\Debug\net10.0\lib1.AssemblyInfoInputs.cache
+C:\Demo\MyApp\lib1\obj\Debug\net10.0\lib1.AssemblyInfo.cs
+C:\Demo\MyApp\lib1\obj\Debug\net10.0\lib1.csproj.CoreCompileInputs.cache
+C:\Demo\MyApp\lib1\obj\Debug\net10.0\lib1.dll
+C:\Demo\MyApp\lib1\obj\Debug\net10.0\refint\lib1.dll
+C:\Demo\MyApp\lib1\obj\Debug\net10.0\lib1.pdb
+C:\Demo\MyApp\lib1\obj\Debug\net10.0\ref\lib1.dll
+C:\Demo\MyApp\lib1\bin\Debug\net10.0\lib1.runtimeconfig.json
+C:\Demo\MyApp\lib1\obj\Debug\net10.0\lib1.csproj.AssemblyReference.cache
+C:\Demo\MyApp\lib1\obj\Debug\net10.0\lib1.genruntimeconfig.cache

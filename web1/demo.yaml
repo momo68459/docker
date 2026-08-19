@@ -1,0 +1,114 @@
+# 1. 建立 Secret 保存 SQL Server 密碼
+apiVersion: v1
+kind: Secret
+metadata:
+  name: sqlserver-secret
+type: Opaque
+stringData:
+  SA_PASSWORD: "pass@word1234"
+
+---
+# 2. 建立 PersistentVolumeClaim (PVC) 給 SQL Server 儲存資料
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mssql-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+
+---
+# 3. SQL Server Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sqlserver-deployment
+  labels:
+    app: sqlserver
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sqlserver
+  template:
+    metadata:
+      labels:
+        app: sqlserver
+    spec:
+      containers:
+      - name: sql2022
+        image: mcr.microsoft.com/mssql/server:2022-latest
+        ports:
+        - containerPort: 1433
+        env:
+        - name: ACCEPT_EULA
+          value: "Y"
+        - name: MSSQL_SA_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: sqlserver-secret
+              key: SA_PASSWORD
+        volumeMounts:
+        - name: mssql-storage
+          mountPath: /var/opt/mssql/data
+      volumes:
+      - name: mssql-storage
+        persistentVolumeClaim:
+          claimName: mssql-pvc
+
+---
+# 4. SQL Server Service (供 web1 在 Cluster 內部連線)
+apiVersion: v1
+kind: Service
+metadata:
+  name: sqlserver # 注意：web1 連線字串中的 Server 屬性可直接填此名稱 "sqlserver,1433"
+spec:
+  type: ClusterIP
+  selector:
+    app: sqlserver
+  ports:
+  - port: 1433
+    targetPort: 1433
+
+---
+# 5. Web1 Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web1-deployment
+  labels:
+    app: web1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web1
+  template:
+    metadata:
+      labels:
+        app: web1
+    spec:
+      containers:
+      - name: web1
+        image: web1:latest # 若使用 Minikube / Kind，需先將 Image 載入集群中
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+
+---
+# 6. Web1 Service (暴露對外 Port 讓外部存取)
+apiVersion: v1
+kind: Service
+metadata:
+  name: web1-service
+spec:
+  type: NodePort # 若在雲端 (GKE/AKS/EKS) 可改為 LoadBalancer
+  selector:
+    app: web1
+  ports:
+  - port: 8080
+    targetPort: 8080
+    nodePort: 30080 # 外部可透過 http://<Node-IP>:30080 訪問

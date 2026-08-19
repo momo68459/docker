@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Customers</title>
+	<style>
+		:root {
+			--bg: #f4f6f8;
+			--card: #ffffff;
+			--text: #1f2937;
+			--muted: #6b7280;
+			--primary: #0b63ce;
+			--border: #d1d5db;
+			--error-bg: #fef2f2;
+			--error-text: #b91c1c;
+		}
+
+		* { box-sizing: border-box; }
+
+		body {
+			margin: 0;
+			font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+			background: linear-gradient(180deg, #eef3f8 0%, var(--bg) 100%);
+			color: var(--text);
+		}
+
+		.container {
+			max-width: 1000px;
+			margin: 40px auto;
+			padding: 0 16px;
+		}
+
+		.card {
+			background: var(--card);
+			border: 1px solid var(--border);
+			border-radius: 12px;
+			box-shadow: 0 8px 24px rgba(17, 24, 39, 0.08);
+			overflow: hidden;
+		}
+
+		.header {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			gap: 12px;
+			padding: 16px;
+			border-bottom: 1px solid var(--border);
+		}
+
+		h1 {
+			margin: 0;
+			font-size: 1.25rem;
+		}
+
+		.actions {
+			display: flex;
+			gap: 8px;
+			flex-wrap: wrap;
+			align-items: center;
+		}
+
+		input[type="text"] {
+			width: 320px;
+			max-width: 100%;
+			border: 1px solid var(--border);
+			border-radius: 8px;
+			padding: 8px 10px;
+			color: var(--text);
+		}
+
+		button {
+			border: 1px solid var(--primary);
+			background: var(--primary);
+			color: #fff;
+			border-radius: 8px;
+			padding: 8px 12px;
+			cursor: pointer;
+			font-weight: 600;
+		}
+
+		button:hover { filter: brightness(0.95); }
+
+		.status {
+			margin: 0;
+			padding: 12px 16px;
+			color: var(--muted);
+			border-bottom: 1px solid var(--border);
+		}
+
+		.status.error {
+			color: var(--error-text);
+			background: var(--error-bg);
+		}
+
+		table {
+			width: 100%;
+			border-collapse: collapse;
+		}
+
+		th, td {
+			padding: 12px 10px;
+			border-bottom: 1px solid #e5e7eb;
+			text-align: left;
+			vertical-align: middle;
+			font-size: 0.95rem;
+		}
+
+		th {
+			background: #f9fafb;
+			font-weight: 700;
+		}
+
+		tr:hover td {
+			background: #f9fcff;
+		}
+
+		.photo {
+			width: 42px;
+			height: 42px;
+			border-radius: 50%;
+			object-fit: cover;
+			border: 1px solid var(--border);
+			background: #f3f4f6;
+		}
+
+		.muted {
+			color: var(--muted);
+			font-style: italic;
+		}
+	</style>
+</head>
+<body>
+	<main class="container">
+		<section class="card">
+			<div class="header">
+				<h1>Customer List</h1>
+				<div class="actions">
+					  <input id="apiUrl" type="text" value="" aria-label="API URL" />
+					<button id="btnLoad" type="button">Load</button>
+				</div>
+			</div>
+
+			<p id="status" class="status">Ready</p>
+
+			<div style="overflow:auto;">
+				<table aria-label="Customers Table">
+					<thead>
+						<tr>
+							<th>ID</th>
+							<th>Name</th>
+							<th>Birthday</th>
+							<th>Photo</th>
+						</tr>
+					</thead>
+					<tbody id="customersBody">
+						<tr><td colspan="4" class="muted">No data loaded.</td></tr>
+					</tbody>
+				</table>
+			</div>
+		</section>
+	</main>
+
+	<script>
+		const statusEl = document.getElementById("status");
+		const tbodyEl = document.getElementById("customersBody");
+		const apiUrlEl = document.getElementById("apiUrl");
+		const loadButton = document.getElementById("btnLoad");
+
+		const defaultApiUrl =
+			window.location.protocol === "https:"
+				? "https://localhost:7131/Customers"
+				: "http://localhost:5281/Customers";
+		apiUrlEl.value = defaultApiUrl;
+
+		function setStatus(message, isError = false) {
+			statusEl.textContent = message;
+			statusEl.classList.toggle("error", isError);
+		}
+
+		function toSafeText(value) {
+			if (value === null || value === undefined || value === "") return "-";
+			return String(value);
+		}
+
+		function formatBirthday(value) {
+			if (!value) return "-";
+			const date = new Date(value);
+			if (Number.isNaN(date.getTime())) return toSafeText(value);
+			return date.toLocaleDateString();
+		}
+
+		function renderCustomers(customers) {
+			tbodyEl.innerHTML = "";
+
+			if (!Array.isArray(customers) || customers.length === 0) {
+				tbodyEl.innerHTML = '<tr><td colspan="4" class="muted">No customers found.</td></tr>';
+				return;
+			}
+
+			for (const c of customers) {
+				const tr = document.createElement("tr");
+
+				const idTd = document.createElement("td");
+				idTd.textContent = toSafeText(c.customerID);
+
+				const nameTd = document.createElement("td");
+				nameTd.textContent = toSafeText(c.name);
+
+				const birthdayTd = document.createElement("td");
+				birthdayTd.textContent = formatBirthday(c.birthday);
+
+				const photoTd = document.createElement("td");
+				if (c.photo) {
+					const img = document.createElement("img");
+					img.src = c.photo;
+					img.alt = `${toSafeText(c.name)} photo`;
+					img.className = "photo";
+					photoTd.appendChild(img);
+				} else {
+					photoTd.textContent = "-";
+				}
+
+				tr.appendChild(idTd);
+				tr.appendChild(nameTd);
+				tr.appendChild(birthdayTd);
+				tr.appendChild(photoTd);
+				tbodyEl.appendChild(tr);
+			}
+		}
+
+		async function loadCustomers() {
+			const url = apiUrlEl.value.trim();
+			if (!url) {
+				setStatus("Please provide API URL.", true);
+				return;
+			}
+
+			setStatus("Loading customers...");
+			loadButton.disabled = true;
+
+			try {
+				const response = await fetch(url, {
+					method: "GET",
+					headers: { "Accept": "application/json" }
+				});
+
+				if (!response.ok) {
+					throw new Error(`HTTP ${response.status} ${response.statusText}`);
+				}
+
+				const data = await response.json();
+				renderCustomers(data);
+				setStatus(`Loaded ${Array.isArray(data) ? data.length : 0} customer(s).`);
+			} catch (error) {
+				renderCustomers([]);
+				setStatus(`Failed to load customers: ${error.message}`, true);
+			} finally {
+				loadButton.disabled = false;
+			}
+		}
+
+		loadButton.addEventListener("click", loadCustomers);
+		loadCustomers();
+	</script>
+</body>
+</html>
+

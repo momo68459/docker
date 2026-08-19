@@ -1,0 +1,24 @@
+@model AddModel
+
+<h1>Math Add</h1>
+
+<form asp-controller="Math" asp-action="Add" method="post">
+    <label asp-for="No1"></label>
+    <input asp-for="No1" />
+    <span asp-validation-for="No1" style="color: red;"></span>
+    <br>
+
+    <label asp-for="No2"></label>
+    <input asp-for="No2" />
+    <span asp-validation-for="No2" style="color: red;"></span>
+    <br>
+
+    <input type="submit" value="Add" /><br>
+
+    Answer: @Model?.Answer
+</form>
+
+@* 加入這段即可啟用前端即時驗證 *@
+@* @section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+} *@
